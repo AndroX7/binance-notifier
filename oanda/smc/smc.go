@@ -12,30 +12,28 @@ type SwingPoint struct {
 	High  bool
 }
 
-func DetectSwingPoints(candles []oanda.Candle, window int) []SwingPoint {
+func DetectSwingPoints(candles []oanda.Candle, period int) []SwingPoint {
 	var swings []SwingPoint
-
-	for i := window; i < len(candles)-window; i++ {
-		high := candles[i].High
-		low := candles[i].Low
-
-		isHigh := true
-		isLow := true
-
-		for j := 1; j <= window; j++ {
-			if candles[i-j].High >= high || candles[i+j].High >= high {
-				isHigh = false
+	for i := period; i < len(candles)-period; i++ {
+		high := true
+		low := true
+		for j := i - period; j <= i+period; j++ {
+			if candles[i].Close < candles[j].Close {
+				high = false
 			}
-			if candles[i-j].Low <= low || candles[i+j].Low <= low {
-				isLow = false
+			if candles[i].Close > candles[j].Close {
+				low = false
 			}
 		}
-
-		if isHigh {
-			swings = append(swings, SwingPoint{Index: i, Price: high, High: true})
-		} else if isLow {
-			swings = append(swings, SwingPoint{Index: i, Price: low, High: false})
+		if high {
+			swings = append(swings, SwingPoint{Index: i, Price: candles[i].Close, High: true})
 		}
+		if low {
+			swings = append(swings, SwingPoint{Index: i, Price: candles[i].Close, High: false})
+		}
+	}
+	if len(swings) == 0 {
+		return nil
 	}
 	return swings
 }
