@@ -14,6 +14,8 @@ const (
 	baseURL = "https://api-fxpractice.oanda.com/v3"
 )
 
+var token *string
+
 type Candle struct {
 	Time   time.Time
 	Open   float64
@@ -37,8 +39,12 @@ type oandaResponse struct {
 	} `json:"candles"`
 }
 
+func SetToken(t string) {
+	token = &t
+}
+
 // FetchCandles fetches historical candles from OANDA
-func FetchCandles(token, instrument, granularity string, count int) ([]Candle, error) {
+func FetchCandles(instrument, granularity string, count int) ([]Candle, error) {
 	url := fmt.Sprintf("%s/instruments/%s/candles?count=%d&granularity=%s&price=M", baseURL, instrument, count, granularity)
 
 	req, err := http.NewRequest("GET", url, nil)
@@ -46,7 +52,7 @@ func FetchCandles(token, instrument, granularity string, count int) ([]Candle, e
 		return nil, err
 	}
 
-	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Authorization", "Bearer "+*token)
 
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
