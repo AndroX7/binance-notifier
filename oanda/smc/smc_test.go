@@ -77,9 +77,9 @@ func TestDetectImbalance(t *testing.T) {
 
 func TestDetectLiquiditySweeps(t *testing.T) {
 	candles := []oanda.Candle{
-		{High: 1.2, Low: 1.1},
-		{High: 1.3, Low: 1.2},
-		{High: 1.4, Low: 1.3},
+		{High: 1.2, Low: 1.1, Open: 1.15, Close: 1.1},
+		{High: 1.3, Low: 1.2, Open: 1.25, Close: 1.23},
+		{High: 1.4, Low: 1.3, Open: 1.35, Close: 1.3},
 	}
 	liqs := smc.DetectLiquiditySweeps(candles)
 	if len(liqs) == 0 {
